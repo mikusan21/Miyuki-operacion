@@ -1,0 +1,95 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 12px;
+}
+/* Title */
+.title { font-size: 20px; margin: 6px 0 0 0; color: #0f172a; }
+.metricsRow { margin-top: 8px;}
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.metricCard {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.06);
+}
+.metricTitle { font-size: 13px; color: #6b7280; }
+.metricMain { margin-top: 8px; font-weight: 700; font-size: 16px; color: #0f172a; }
+.metricChange { color: #16a34a; margin-top: 6px; font-weight: 600; }
+/* Ranking ventas categoria titulo */
+.sectionTitle {
+  font-size: 14px;
+  color: #2d5cbe;
+  font-weight: 700;
+  margin: 20px 0 0 4px;
+}
+/* Sedes cards layout */
+.salesSedesRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 12px;
+}
+/* Card base */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.04);
+}
+.cardHeader { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 12px; }
+.cardTitle { font-weight:700; color:#0f172a; font-size: 13px; }
+.amount { color:#0f172a; font-weight:700; font-size: 13px;}
+/* Horizontal bars */
+.hBars { display:flex; flex-direction:column; gap:10px; padding-bottom:6px; }
+.hBarRow { display:flex; align-items:center; gap:12px; }
+.hBarLabel { width:130px; font-size:13px; color:#374151; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.hBarTrack {
+  flex:1;
+  height:12px;
+  background:#eef6fb;
+  border-radius:999px;
+  overflow:hidden;
+}
+.hBarFill {
+  height:100%;
+  background: linear-gradient(90deg, #288cff, #4eaeff);
+  border-radius:999px;
+}
+.hBarValue { width:46px; text-align:right; font-weight:600; color:#0f172a; font-size: 13px}
+/* Large card for ciclo de reservas */
+.largeRow { margin-top: 22px;}
+.cardFull {
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 8px 24px rgba(2,6,23,0.06);
+}
+.cardHeader { margin-bottom: 10px;}
+.amountBig { font-weight:700; color:#0f172a; margin-left:8px; }
+/* Ciclo bars gráfico */
+.cycleBars {
+  display: flex;
+  align-items: flex-end;
+  gap: 30px;
+  min-height: 112px;
+  padding: 16px 22px;
+  margin-bottom: 8px;
+}
+.cycleBarItem { display:flex; flex-direction:column; align-items:center; gap:6px;}
+.cycleBarBar {
+  width: 48px;
+  border-radius:10px 10px 0 0;
+  background: linear-gradient(180deg, #288cff 60%, #4eaeff 100%);
+}
+.cycleBarLabel { color:#1e2236; font-size: 14px; font-weight: 600; }
+/* Responsive */
+@media (max-width: 1200px) {
+  .salesSedesRow { grid-template-columns: 1fr; }
+  .metricsGrid { grid-template-columns: 1fr; }
+}
