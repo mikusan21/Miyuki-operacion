@@ -9,16 +9,18 @@ import {
 import {useRouter} from "next/navigation";
 import {
   getPedidos,
+  crearPedido,
   updatePedidoStatus, // Asumiendo que esta función existe en lib/api.ts
   type PedidoResponse,
   type PedidoStatus,
 } from "@/lib/api";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
-import {Check, X, PlusCircle} from "lucide-react"; // Iconos para acciones y agregar
+import {Check, X, PlusCircle, Loader2} from "lucide-react"; // Iconos para acciones y agregar
 import {DatePicker} from "@/components/ui/date-picker"; // Asumiendo que tienes un DatePicker
 import {format} from "date-fns";
 import {es} from "date-fns/locale";
+import AddPedidoModal from "./AddPedidoModal";
 import {
   Select,
   SelectContent,
@@ -61,6 +63,7 @@ export default function PedidosPage() {
   const [selectedDateFilter, setSelectedDateFilter] = useState<
     Date | undefined
   >(undefined);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   useEffect(() => {
     const stored =
@@ -205,10 +208,14 @@ export default function PedidosPage() {
   );
 
   const handleAddPedido = () => {
-    // Lógica para agregar un nuevo pedido (puede abrir un modal o redirigir)
-    console.log("Abrir modal para agregar pedido");
-    // router.push("/home/pedidos/add"); // Ejemplo de redirección
+    setIsAddModalOpen(true);
   };
+
+  const handlePedidoCreated = (newPedido: PedidoResponse) => {
+    setPedidos((prev) => [newPedido, ...prev]);
+    setIsAddModalOpen(false);
+  };
+
 
   if (checkingAuth) {
     return <LoadingView />;
@@ -220,6 +227,11 @@ export default function PedidosPage() {
 
   return (
     <div className="h-full overflow-auto p-8">
+      <AddPedidoModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onPedidoCreated={handlePedidoCreated}
+      />
       <div className="mx-auto max-w-6xl space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold text-foreground">

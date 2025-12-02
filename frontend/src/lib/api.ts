@@ -108,7 +108,7 @@ export interface LoginMfaChallenge {
 export type LoginResult = LoginResponse | LoginMfaChallenge;
 
 export interface UsuarioPerfil {
-  id: string;
+  _id: string;
   nombre: string;
   rol: string;
   codigoUsu?: string;
@@ -132,10 +132,9 @@ export interface PopulatedMenu {
   _id?: string;
   id?: string;
   fecha: string;
-  sede: string;
+  sede: string | { _id: string; nombre: string };
+  precio: number;
   sedeNombre?: string | null;
-  precioNormal: number;
-  precioEjecutivo: number;
   normal: {
     entrada: PopulatedPlatoMenu;
     segundo: PopulatedPlatoMenu;
@@ -298,11 +297,13 @@ export async function getPedidos() {
 
 export async function crearPedido(payload: {
   sede: string;
+  usuario: string;
   items: Array<{
     refId: string;
     tipo: string;
     cantidad: number;
     precioUnitario: number;
+    nombre?: string;
   }>;
   fechaEntrega?: string;
 }) {

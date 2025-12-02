@@ -1,56 +1,75 @@
-"use client"
+"use client";
 
-import Image from "next/image"
+import Image from "next/image";
 
-// Definimos las categorías estáticamente aquí.
-// Estas coinciden con los tipos de menú en tu aplicación.
 const categories = [
   {
     id: "normal",
     nombre: "Menú Normal",
-    imagen: "/imagen2.jpg", // Asegúrate de que esta imagen exista en tu carpeta /public
+    imagen: "/imagen2.jpg",
   },
   {
     id: "ejecutivo",
     nombre: "Menú Ejecutivo",
-    imagen: "/imagen3.jpg", // Asegúrate de que esta imagen exista en tu carpeta /public
+    imagen: "/imagen3.jpg",
   },
   {
     id: "universitario",
     nombre: "Menú Universitario",
-    imagen: "/imagen4.jpg", // Asegúrate de que esta imagen exista en tu carpeta /public
+    imagen: "/imagen4.jpg",
   },
-]
+];
 
 interface MenuProps {
-  onNavigate: (page: string) => void
+  onNavigate: (page: string) => void;
 }
 
-export default function CategoryGrid({onNavigate}: MenuProps) {
-  //  Al hacer clic: redirige al menú y guarda la categoría seleccionada en sessionStorage
-  const handleClick = (categoryId: string) => { // La lógica de sessionStorage y router.push se maneja en el padre
-    onNavigate(categoryId) // Llamar a la función onNavigate pasada como prop
-  }
+export default function CategoryGrid({ onNavigate }: MenuProps) {
+  const handleClick = (categoryId: string) => {
+    onNavigate(categoryId);
+  };
 
   return (
-    <div className="w-full flex justify-center">
+    <div className="w-full flex justify-center py-6">
       <div
-        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 w-full max-w-7xl px-8 place-items-center"
+        className="
+          grid 
+          grid-cols-1 
+          sm:grid-cols-2 
+          md:grid-cols-3 
+          lg:grid-cols-3 
+          gap-6 
+          max-w-5xl 
+          w-full 
+          place-items-center
+        "
       >
         {categories.map((cat) => (
           <div
             key={cat.id}
             onClick={() => handleClick(cat.id)}
-            className="relative cursor-pointer rounded-2xl overflow-hidden shadow-md hover:shadow-xl hover:scale-105 transition-transform duration-300 w-full max-w-[230px] aspect-[5/3]"
+            className="
+              relative cursor-pointer 
+              rounded-3xl overflow-hidden 
+              shadow-md hover:shadow-2xl 
+              hover:scale-105 
+              transition-all 
+              duration-300
+              w-full 
+              max-w-[260px]
+              aspect-[4/3]
+              bg-white/10 backdrop-blur-sm
+            "
           >
             <Image
               src={cat.imagen}
               alt={cat.nombre}
               fill
-              className="object-cover brightness-50"
+              className="object-cover transition-all duration-300 brightness-75 hover:brightness-90"
             />
+
             <div className="absolute inset-0 flex items-center justify-center">
-              <h3 className="text-white text-lg font-bold text-center drop-shadow-md">
+              <h3 className="text-white text-lg sm:text-xl font-semibold text-center drop-shadow-md px-2">
                 {cat.nombre}
               </h3>
             </div>
@@ -58,5 +77,5 @@ export default function CategoryGrid({onNavigate}: MenuProps) {
         ))}
       </div>
     </div>
-  )
+  );
 }

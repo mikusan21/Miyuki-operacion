@@ -94,8 +94,13 @@ export default function OrdersPage() {
     const partitioned = orders.reduce(
       (acc, pedido) => {
         const uiOrder = transform(pedido);
+        const orderDate = new Date(pedido.creadoEn);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Normalizar a la medianoche
+
         const statusString = getStatusString(pedido.estado);
-        if (statusString === "entregado" || statusString === "cancelado") {
+        // Un pedido es pasado si su estado es final o si su fecha es anterior a hoy.
+        if (statusString === "entregado" || statusString === "cancelado" || orderDate < today) {
           acc.past.push(uiOrder);
         } else {
           acc.current.push(uiOrder);
@@ -112,7 +117,7 @@ export default function OrdersPage() {
   }, [orders]);
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
+  <div className="min-h-screen bg-[#EFF6FF] p-8 max-w-6xl mx-auto">
       <div className="mb-12">
         <h1 className="text-3xl font-bold text-foreground mb-6">
           Mis reservas
