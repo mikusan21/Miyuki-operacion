@@ -3,15 +3,21 @@
 import {useEffect, useMemo, useState} from "react";
 import {useRouter} from "next/navigation";
 import {
+  DollarSign,
+  ShoppingCart,
+  Users,
+  BarChart3,
+  ClipboardList,
+  Package,
+} from "lucide-react";
+import {
   getPedidos,
   getResultadosEncuestas,
   type EncuestaMenuResultado,
   type PedidoResponse,
 } from "@/lib/api";
-import KeyMetrics from "@/components/analytics/KeyMetrics";
 import HorizontalBars from "@/components/analytics/HorizontalBars";
 import CycleBars from "@/components/analytics/CycleBars";
-import styles from "@/components/analytics/Analytics.module.css";
 
 function LoadingView() {
   return (
@@ -23,6 +29,20 @@ function LoadingView() {
     </div>
   );
 }
+
+const MetricCard = ({ title, value, icon: Icon, color, subValue }: { title: string, value: string, icon: React.ElementType, color: string, subValue?: string }) => (
+  <div className="bg-white p-6 rounded-lg shadow-sm border border-border flex items-start justify-between">
+    <div>
+      <p className="text-sm font-medium text-foreground-secondary">{title}</p>
+      <p className="text-3xl font-bold text-foreground mt-2">{value}</p>
+      {subValue && <p className="text-xs text-foreground-secondary mt-1">{subValue}</p>}
+    </div>
+    <div className={`p-3 rounded-full ${color}`}>
+      <Icon className="h-6 w-6 text-white" />
+    </div>
+  </div>
+);
+
 
 function formatDate(value: string) {
   const date = new Date(value);
@@ -281,23 +301,6 @@ export default function AnalyticsPage() {
     };
   }, [pedidosHoy]);
 
-  // --- Preparación de datos para los componentes de gráficos ---
-
-  const sedePopular = useMemo(() => (dailyMetrics.topSede
-    ? { sede: dailyMetrics.topSede.sede, change: formatCurrency(dailyMetrics.topSede.total) }
-    : undefined
-  ), [dailyMetrics.topSede]);
-
-  const platoPopular = useMemo(() => (dailyMetrics.topDish
-    ? { plato: dailyMetrics.topDish.nombre, change: `${dailyMetrics.topDish.cantidad} uds` }
-    : undefined
-  ), [dailyMetrics.topDish]);
-
-  const usuarioActivo = useMemo(() => (dailyMetrics.topUser
-    ? { usuario: dailyMetrics.topUser.displayName, change: formatCurrency(dailyMetrics.topUser.total) }
-    : undefined
-  ), [dailyMetrics.topUser]);
-
   const totalVentas = dailyMetrics.ranking.map(sedeData => ({
     sede: sedeData.sede,
     monto: formatCurrency(sedeData.total),
@@ -328,142 +331,74 @@ export default function AnalyticsPage() {
             Análisis de métricas
           </p>
         </header>
-        <section className="space-y-4">
-          <h2 className="text-2xl font-bold text-foreground">
-            Métricas del día
-          </h2>
-          {loading ? (
-            <div className="rounded-xl border border-border bg-white p-6 text-sm text-foreground-secondary">
-              Procesando ventas del día...
-            </div>
-          ) : (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <div className="rounded-xl border border-border bg-white p-6 shadow-sm">
-                <p className="text-xs uppercase text-foreground-secondary">
-                  Sede más popular
-                </p>
-                <p className="mt-2 text-xl font-semibold text-foreground">
-                  {dailyMetrics.topSede
-                    ? dailyMetrics.topSede.sede
-                    : "Sin datos"}
-                </p>
-                <p className="mt-1 text-xs text-foreground-secondary">
-                  {dailyMetrics.topSede
-                    ? `Ingresos: ${formatCurrency(dailyMetrics.topSede.total)}`
-                    : "No hay pedidos registrados hoy."}
-                </p>
-              </div>
-              <div className="rounded-xl border border-border bg-white p-6 shadow-sm">
-                <p className="text-xs uppercase text-foreground-secondary">
-                  Plato más pedido
-                </p>
-                <p className="mt-2 text-xl font-semibold text-foreground">
-                  {dailyMetrics.topDish
-                    ? dailyMetrics.topDish.nombre
-                    : "Sin datos"}
-                </p>
-                <p className="mt-1 text-xs text-foreground-secondary">
-                  {dailyMetrics.topDish
-                    ? `${dailyMetrics.topDish.cantidad} unidad${
-                        dailyMetrics.topDish.cantidad === 1 ? "" : "es"
-                      } · ${formatCurrency(dailyMetrics.topDish.revenue)}`
-                    : "No hay pedidos registrados hoy."}
-                </p>
-              </div>
-              <div className="rounded-xl border border-border bg-white p-6 shadow-sm">
-                <p className="text-xs uppercase text-foreground-secondary">
-                  Usuario más activo
-                </p>
-                <p className="mt-2 text-xl font-semibold text-foreground">
-                  {dailyMetrics.topUser
-                    ? dailyMetrics.topUser.displayName
-                    : "Sin datos"}
-                </p>
-                <p className="mt-1 text-xs text-foreground-secondary">
-                  {dailyMetrics.topUser
-                    ? `Consumo: ${formatCurrency(dailyMetrics.topUser.total)}`
-                    : "No hay pedidos registrados hoy."}
-                </p>
-              </div>
-            </div>
-          )}
-        </section>
 
-        <section className="space-y-4">
-          <h2 className="text-2xl font-bold text-foreground">
-            Ranking de ventas por categoría en cada sede
-          </h2>
-          {loading ? (
-            <div className="rounded-xl border border-border bg-white p-6 text-sm text-foreground-secondary">
-              Preparando ranking de categorías...
-            </div>
-          ) : dailyMetrics.ranking.length === 0 ? (
-            <div className="rounded-lg border border-border bg-muted/40 p-6 text-sm text-foreground-secondary">
-              No hay ventas registradas hoy.
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {dailyMetrics.ranking.map(({sede, total, categories}) => (
-                <div
-                  key={sede}
-                  className="rounded-xl border border-border bg-white p-6 shadow-sm"
-                >
-                  <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
-                    <div>
-                      <h3 className="text-lg font-semibold text-foreground">
-                        {sede}
-                      </h3>
-                      <p className="text-sm text-foreground-secondary">
-                        Ingresos totales: {formatCurrency(total)}
-                      </p>
+        {/* Métricas del Día */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <MetricCard 
+            title="Sede más popular (hoy)" 
+            value={dailyMetrics.topSede?.sede ?? "N/A"} 
+            subValue={dailyMetrics.topSede ? `Ingresos: ${formatCurrency(dailyMetrics.topSede.total)}` : "Sin pedidos hoy"}
+            icon={DollarSign} 
+            color="bg-emerald-500" 
+          />
+          <MetricCard 
+            title="Plato más pedido (hoy)" 
+            value={dailyMetrics.topDish?.nombre ?? "N/A"} 
+            subValue={dailyMetrics.topDish ? `${dailyMetrics.topDish.cantidad} uds · ${formatCurrency(dailyMetrics.topDish.revenue)}` : "Sin pedidos hoy"}
+            icon={Package} 
+            color="bg-blue-500" 
+          />
+          <MetricCard 
+            title="Usuario más activo (hoy)" 
+            value={dailyMetrics.topUser?.displayName ?? "N/A"} 
+            subValue={dailyMetrics.topUser ? `Consumo: ${formatCurrency(dailyMetrics.topUser.total)}` : "Sin pedidos hoy"}
+            icon={Users} 
+            color="bg-orange-500" 
+          />
+        </div>
+
+        {/* Gráficos de Ventas y Ciclos */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+          <div className="lg:col-span-3 bg-white p-6 rounded-lg shadow-sm border border-border">
+            <h3 className="text-lg font-semibold mb-4">Ranking de Ventas por Sede</h3>
+            {totalVentas.length > 0 ? (
+              <div className="space-y-6">
+                {totalVentas.map((sedeBox) => (
+                  <div key={sedeBox.sede}>
+                    <div className="flex justify-between items-baseline mb-2">
+                      <h4 className="font-medium">{sedeBox.sede}</h4>
+                      <p className="text-sm font-bold text-primary">{sedeBox.monto}</p>
                     </div>
+                    <HorizontalBars items={sedeBox.categories} />
                   </div>
-                  {categories.length === 0 ? (
-                    <p className="text-sm text-foreground-secondary">
-                      Sin ventas registradas para esta sede hoy.
-                    </p>
-                  ) : (
-                    <ul className="space-y-2">
-                      {categories.map(({category, total: categoryTotal}) => (
-                        <li
-                          key={category}
-                          className="flex items-center justify-between text-sm text-foreground"
-                        >
-                          <span className="capitalize text-foreground-secondary">
-                            {category}
-                          </span>
-                          <span className="font-medium text-foreground">
-                            {formatCurrency(categoryTotal)}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-foreground-secondary text-center py-8">No hay datos de ventas para mostrar.</p>
+            )}
+          </div>
+          <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm border border-border">
+            <h3 className="text-lg font-semibold mb-4">Reservas por Ciclos</h3>
+            <p className="text-sm text-foreground-secondary mb-6">Visualización de interacciones a lo largo de los ciclos académicos.</p>
+            <CycleBars data={cicloReservas} />
+          </div>
+        </div>
 
         <section className="space-y-4">
           <h2 className="text-2xl font-bold text-foreground">Encuestas</h2>
-          <div className="grid gap-4 rounded-xl border border-border bg-white p-6 sm:grid-cols-2 lg:grid-cols-3">
-            <div>
-              <p className="text-xs uppercase text-foreground-secondary">
-                Menús evaluados
-              </p>
-              <p className="text-2xl font-semibold text-foreground">
-                {resumenGlobal.totalMenus}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs uppercase text-foreground-secondary">
-                Respuestas totales
-              </p>
-              <p className="text-2xl font-semibold text-foreground">
-                {resumenGlobal.totalEncuestas}
-              </p>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <MetricCard 
+              title="Menús Evaluados" 
+              value={resumenGlobal.totalMenus.toString()} 
+              icon={ClipboardList} 
+              color="bg-purple-500" 
+            />
+            <MetricCard 
+              title="Respuestas Totales" 
+              value={resumenGlobal.totalEncuestas.toString()} 
+              icon={BarChart3} 
+              color="bg-pink-500" 
+            />
           </div>
         </section>
 
@@ -547,35 +482,6 @@ export default function AnalyticsPage() {
                 </div>
               </section>
             ))}
-
-            {/* SECCIÓN DE GRÁFICOS CORREGIDA */}
-            <div className={styles.metricsRow}>
-              <KeyMetrics sedePopular={sedePopular} platoPopular={platoPopular} usuarioActivo={usuarioActivo} />
-            </div>
-
-            <div className={styles.sectionTitle}>Ranking de ventas por categoría en cada sede</div>
-
-            <div className={styles.salesSedesRow}>
-              {totalVentas.map((sedeBox) => (
-                <div className={styles.card} key={sedeBox.sede}>
-                  <div className={styles.cardHeader}>
-                    <div className={styles.cardTitle}>Ventas Totales por Categoría en la {sedeBox.sede}</div>
-                    <div className={styles.amount}>{sedeBox.monto}</div>
-                  </div>
-                  <HorizontalBars items={sedeBox.categories} />
-                </div>
-              ))}
-            </div>
-
-            <div className={styles.largeRow}>
-              <div className={styles.cardFull}>
-                <div className={styles.cardHeader}>
-                  <div className={styles.cardTitle}>Reservas realizadas por ciclos</div>
-                  <div className={styles.amountBig}>150 000 interaciones</div>
-                </div>
-                <CycleBars data={cicloReservas} />
-              </div>
-            </div>
           </div>
         )}
       </div>

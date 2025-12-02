@@ -3,16 +3,19 @@
 import {useRouter} from "next/navigation";
 import {useState, type KeyboardEvent} from "react";
 import Image from "next/image";
-import {Bell, LogOut, Search} from "lucide-react";
+import {LogOut, Search} from "lucide-react";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {logout} from "@/lib/api";
+import {NotificationBell, type Notification} from "./NotificationBell";
 
 interface HeaderProps {
   user: any;
+  notifications: Notification[];
+  setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>;
 }
 
-export default function Header({user}: HeaderProps) {
+export default function Header({user, notifications, setNotifications}: HeaderProps) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -48,7 +51,8 @@ export default function Header({user}: HeaderProps) {
 
   return (
     <header className="bg-white border-b border-border px-8 py-4 flex items-center justify-between">
-      <div className="flex items-center space-x-4">
+      {/* Sección Izquierda: Logo */}
+      <div className="flex-shrink-0">
         <button onClick={() => router.push("/home/Principal")} className="cursor-pointer">
           <Image
             src="/logo-utp.png"
@@ -59,26 +63,26 @@ export default function Header({user}: HeaderProps) {
             className="object-contain"
           />
         </button>
-        <div className="relative">
-          <Search
-            className="absolute left-s3 top-1/2 transform -translate-y-1/2 text-foreground-secondary"
-            size={18}
-          />
+      </div>
+
+      {/* Sección Central: Barra de Búsqueda */}
+      <div className="flex-1 flex justify-center px-8">
+        <div className="relative w-full max-w-lg">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground-secondary" size={18} />
           <Input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyDown={handleSearch}
-            placeholder="Buscar platos o comedores"
-            className="pl-10 w-96"
+            placeholder="Buscar platos, menús o comedores..."
+            className="pl-11 pr-4 py-2 w-full bg-muted/50 rounded-full border-transparent focus:border-primary focus:bg-white focus:ring-1 focus:ring-primary"
           />
         </div>
       </div>
 
-      <div className="flex items-center space-x-6">
-        <button className="text-foreground-secondary hover:text-foreground transition-smooth">
-          <Bell size={24} />
-        </button>
+      {/* Sección Derecha: Perfil de Usuario */}
+      <div className="flex items-center space-x-6 flex-shrink-0">
+        <NotificationBell notifications={notifications} setNotifications={setNotifications} />
         <div className="flex items-center space-x-3">
           <div className="text-right">
             <p className="text-sm font-medium text-foreground">
