@@ -56,7 +56,12 @@ export default function Sidebar({user}: SidebarProps) {
   ];
 
 
-  const menuItems = isAdmin ? adminMenuItems : userMenuItems;
+  const menuItems =
+    user?.rol === "admin"
+      ? adminMenuItems
+      : user?.rol === "coordinador"
+      ? coordinadorMenuItems
+      : userMenuItems;
 
   const handleLogout = async () => {
     try {

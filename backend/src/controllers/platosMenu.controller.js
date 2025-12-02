@@ -7,9 +7,11 @@ class PlatoMenuController {
   static async crearPlato(req, reply) {
     try {
       const usuario = req.user;
-      const { sede: sedeId, nombre, descripcion, tipo, imagenUrl, stock } = req.body;
+      const { sede: sedeId, nombre, descripcion, tipo, imagenUrl, stock, precio, tipoMenu, activo } = req.body;
 
-      if (!usuario) return reply.code(401).send({ error: "No autenticado" });
+      if (!usuario) return reply.code(401).send({ error: "No autenticado." });
+
+      // Usar directamente el rol que viene en el token JWT
       if (![ROLES.ADMIN, ROLES.COORD].includes(usuario.rol))
         return reply.code(403).send({ error: "No tienes permisos para crear platos" });
 
@@ -30,8 +32,10 @@ class PlatoMenuController {
         descripcion,
         tipo,
         imagenUrl,
-        stock,
+        stock: stock ?? 0,
+        precio: precio ?? 0, // Añadir precio, con 0 como valor por defecto
         sede: sedeDoc._id,
+        activo: activo ?? true, // Añadir activo, con true como valor por defecto
       });
 
       return reply.code(201).send(nuevoPlato);

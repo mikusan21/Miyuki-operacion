@@ -456,9 +456,9 @@ export default function ProductsPage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="">Seleccionar</SelectItem>
-                      {sedeOptions.map((sede) => (
-                        <SelectItem key={sede} value={sede}>
-                          {sede}
+                      {sedes.map((sede) => (
+                        <SelectItem key={sede._id} value={sede._id}>
+                          {sede.nombre}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -595,27 +595,31 @@ export default function ProductsPage() {
 
       {showCreateMenuModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="w-full max-w-3xl rounded-2xl bg-white p-6 shadow-2xl">
-            <div className="mb-4 flex items-center justify-between">
+          {/* Contenedor del modal con altura máxima y flex-col */}
+          <div className="w-full max-w-3xl rounded-2xl bg-white shadow-2xl flex flex-col max-h-[90vh]">
+            {/* Cabecera fija */}
+            <div className="p-6 border-b border-border flex-shrink-0">
               <h2 className="text-xl font-semibold text-foreground">Crear menú</h2>
               <button
                 onClick={() => setShowCreateMenuModal(false)}
-                className="text-foreground-secondary hover:text-foreground transition-smooth text-2xl"
+                className="absolute top-4 right-4 text-foreground-secondary hover:text-foreground transition-smooth text-2xl"
                 aria-label="Cerrar"
               >
                 ✕
               </button>
             </div>
-
-            <CreateMenuForm
-              platos={platos}
-              sedeOptions={sedeOptions}
-              onCancel={() => setShowCreateMenuModal(false)}
-              onCreated={async () => {
-                setShowCreateMenuModal(false);
-                await loadPlatos();
-              }}
-            />
+            {/* Área de contenido deslizable */}
+            <div className="overflow-y-auto p-6">
+              <CreateMenuForm
+                platos={platos}
+                sedeOptions={sedeOptions}
+                onCancel={() => setShowCreateMenuModal(false)}
+                onCreated={async () => {
+                  setShowCreateMenuModal(false);
+                  await loadPlatos();
+                }}
+              />
+            </div>
           </div>
         </div>
       )}
